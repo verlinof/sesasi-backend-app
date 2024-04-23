@@ -88,7 +88,6 @@ func Login(c *gin.Context) {
 	}
 
 	//Generate JWT
-	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id": user.ID,
@@ -107,10 +106,25 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	//set to Cookie
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600*24*7, "/", "", false, false)
+
 	//Respond
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "Login successful",
 		"token": tokenString,
+	})
+}
+
+func Validate(c *gin.Context) {
+	//Get token from cookie
+	//Mustget() atau Get() digunakan untuk mendapatkan data yang didapatkan dari middleware
+	user := c.MustGet("currentUser")
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"user_id": user,
+		"message": "Validated",
 	})
 }

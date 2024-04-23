@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/verlinof/sesasi-backend-app/controllers/user_controller"
 	"github.com/verlinof/sesasi-backend-app/initializers"
+	"github.com/verlinof/sesasi-backend-app/middleware"
 )
 
 func init() {
@@ -20,13 +21,9 @@ func init() {
 func main() {
 	route := gin.Default()
 
-	route.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Hello World",
-		})
-	})
 	route.POST("/signup", user_controller.SignUp)
 	route.POST("/login", user_controller.Login)
+	route.GET("/validate", middleware.RequireAuth, user_controller.Validate)
 
 	route.Run()
 }
